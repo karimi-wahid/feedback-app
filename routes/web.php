@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('feedback', [feedbackController::class, 'index'])->name('feedback.index');
+    Route::post('feedback', [feedbackController::class, 'store'])->name('feedback.store');
 });
 
 require __DIR__.'/settings.php';

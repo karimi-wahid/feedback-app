@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,17 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Index() {
+    const { data, setData, post, processing, errors } = useForm({
+        title: '',
+        feedback: '',
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log(data);
+        post('/feedback');
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Feedback" />
@@ -45,23 +56,43 @@ export default function Index() {
                             </DialogDescription>
                         </DialogHeader>
 
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="grid gap-4">
                                 <div>
                                     <Label htmlFor="title">Title</Label>
-                                    <Input id="title" name="title" />
+                                    <Input
+                                        id="title"
+                                        name="title"
+                                        value={data.title}
+                                        onChange={(e) =>
+                                            setData('title', e.target.value)
+                                        }
+                                    />
+                                    {errors.title && <div>{errors.title}</div>}
                                 </div>
                                 <div>
                                     <Label htmlFor="message">Message</Label>
-                                    <Input id="message" name="message" />
+                                    <Input
+                                        id="message"
+                                        name="message"
+                                        value={data.feedback}
+                                        onChange={(e) =>
+                                            setData('feedback', e.target.value)
+                                        }
+                                    />
+                                    {errors.feedback && (
+                                        <div>{errors.feedback}</div>
+                                    )}
                                 </div>
                             </div>
 
-                            <DialogFooter>
+                            <DialogFooter className="m-3">
                                 <DialogClose asChild>
                                     <Button variant="outline">Cancel</Button>
                                 </DialogClose>
-                                <Button type="submit">Post</Button>
+                                <Button type="submit" disabled={processing}>
+                                    {processing ? 'Saving...' : 'Save Feedback'}
+                                </Button>
                             </DialogFooter>
                         </form>
                     </DialogContent>
