@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { CheckCircle } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,23 +25,34 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface pageProps {
+    flash: {
+        success?: string;
+        error?: string;
+    };
+}
+
 export default function Index() {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         feedback: '',
     });
+    const [open, setOpen] = useState(false);
+
+    const { flash } = usePage<pageProps>().props;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(data);
         post('/feedback');
+        setOpen(false);
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Feedback" />
             <div className="p-4">
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                     <div className="flex justify-end">
                         <DialogTrigger asChild>
                             <Button variant="outline" size="lg">
@@ -97,6 +111,13 @@ export default function Index() {
                         </form>
                     </DialogContent>
                 </Dialog>
+                {flash.success && (
+                    <Alert variant="default" className="m-4">
+                        <CheckCircle className="h-4 w-4" />
+                        <AlertTitle>Success</AlertTitle>
+                        <AlertDescription>{flash.success}</AlertDescription>
+                    </Alert>
+                )}
             </div>
         </AppLayout>
     );

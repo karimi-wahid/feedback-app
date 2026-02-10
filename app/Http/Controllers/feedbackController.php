@@ -20,5 +20,6 @@ class feedbackController extends Controller
             'feedback' => 'required|string|max:255'
         ]);
         Feedback::create($validated);
+        return redirect()->route('feedback.index')->with('success', 'Feedback created successfully.');
     }
 }
