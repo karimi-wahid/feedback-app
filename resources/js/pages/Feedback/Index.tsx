@@ -44,8 +44,12 @@ export default function Index() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(data);
-        post('/feedback');
-        setOpen(false);
+        post('/feedback', {
+            onSuccess: () => {
+                setOpen(false);
+                setData({ title: '', feedback: '' });
+            },
+        });
     };
 
     return (
@@ -81,11 +85,16 @@ export default function Index() {
                                         onChange={(e) =>
                                             setData('title', e.target.value)
                                         }
+                                        required
                                     />
-                                    {errors.title && <div>{errors.title}</div>}
+                                    {errors.title && (
+                                        <div className="text-red-500">
+                                            {errors.title}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
-                                    <Label htmlFor="message">Message</Label>
+                                    <Label htmlFor="message">Feedback</Label>
                                     <Input
                                         id="message"
                                         name="message"
@@ -93,9 +102,12 @@ export default function Index() {
                                         onChange={(e) =>
                                             setData('feedback', e.target.value)
                                         }
+                                        required
                                     />
                                     {errors.feedback && (
-                                        <div>{errors.feedback}</div>
+                                        <div className="text-red-500">
+                                            {errors.feedback}
+                                        </div>
                                     )}
                                 </div>
                             </div>
