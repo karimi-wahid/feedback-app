@@ -10,7 +10,8 @@ class feedbackController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Feedback/Index');
+        $feedbacks = Feedback::all();
+        return Inertia::render('Feedback/Index', compact('feedbacks'));
     }
 
     public function store(Request $request)

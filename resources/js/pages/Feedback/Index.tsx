@@ -12,11 +12,27 @@ import {
     DialogFooter,
     DialogClose,
 } from '@/components/ui/dialog';
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, MoreHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -25,11 +41,17 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface pageProps {
+interface PageProps {
     flash: {
         success?: string;
         error?: string;
     };
+
+    feedbacks: {
+        id: number;
+        title: string;
+        feedback: string;
+    }[];
 }
 
 export default function Index() {
@@ -39,7 +61,7 @@ export default function Index() {
     });
     const [open, setOpen] = useState(false);
 
-    const { flash } = usePage<pageProps>().props;
+    const { flash, feedbacks } = usePage<pageProps>().props;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -130,6 +152,54 @@ export default function Index() {
                         <AlertDescription>{flash.success}</AlertDescription>
                     </Alert>
                 )}
+                <div className="m-5 p-5">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Title</TableHead>
+                                <TableHead>Feedback</TableHead>
+                                <TableHead className="text-right">
+                                    Actions
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {feedbacks.map((feedback: any) => (
+                                <TableRow key={feedback.id}>
+                                    <TableCell className="font-medium">
+                                        {feedback.title}
+                                    </TableCell>
+                                    <TableCell>{feedback.feedback}</TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-8"
+                                                >
+                                                    <MoreHorizontalIcon />
+                                                    <span className="sr-only">
+                                                        Open menu
+                                                    </span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem>
+                                                    Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem variant="destructive">
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         </AppLayout>
     );
