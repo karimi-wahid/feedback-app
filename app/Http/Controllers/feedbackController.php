@@ -20,7 +20,21 @@ class feedbackController extends Controller
             'title' => 'required|string|max:100',
             'feedback' => 'required|string|max:255'
         ]);
-        Feedback::create($validated);
+        Feedback::create([
+            'title' => $request->input('title'),
+            'feedback' => $request->input('feedback'),
+        ]);
         return redirect()->route('feedback.index')->with('success', 'Feedback created successfully.');
+    }
+
+    public function update(Request $request, Feedback $feedbackId)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:100',
+            'feedback' => 'required|string|max:255'
+        ]);
+
+        $feedbackId->update($validated);
+        return redirect()->route('feedback.index')->with('success', 'Feedback updated successfully.');
     }
 }

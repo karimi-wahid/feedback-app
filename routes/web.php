@@ -22,6 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('feedback', [feedbackController::class, 'index'])->name('feedback.index');
     Route::post('feedback', [feedbackController::class, 'store'])->name('feedback.store');
+    Route::put('feedback/{feedbackId}', [feedbackController::class, 'update'])->name('feedback.update');
 });
 
 require __DIR__.'/settings.php';

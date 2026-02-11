@@ -41,27 +41,30 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface feedbacks {
+    id: number;
+    title: string;
+    feedback: string;
+}
+
 interface PageProps {
     flash: {
         success?: string;
         error?: string;
     };
 
-    feedbacks: {
-        id: number;
-        title: string;
-        feedback: string;
-    }[];
+    feedbacks: [];
 }
 
 export default function Index() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, put, processing, errors } = useForm({
         title: '',
         feedback: '',
     });
     const [open, setOpen] = useState(false);
+    const [editingId, setEditingId] = useState<number | null>(null);
 
-    const { flash, feedbacks } = usePage<pageProps>().props;
+    const { flash, feedbacks } = usePage<PageProps>().props;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,6 +72,31 @@ export default function Index() {
         post('/feedback', {
             onSuccess: () => {
                 setOpen(false);
+                setData({ title: '', feedback: '' });
+            },
+        });
+    };
+
+    const handleEdit = (feedback: feedbacks) => {
+        setEditingId(feedback.id);
+
+        setData({
+            title: feedback.title,
+            feedback: feedback.feedback,
+        });
+
+        setOpen(true);
+    };
+
+    const handleUpdate = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!editingId) return;
+
+        put(`/feedback/${editingId}`, {
+            onSuccess: () => {
+                setOpen(false);
+                setEditingId(null);
                 setData({ title: '', feedback: '' });
             },
         });
@@ -185,7 +213,11 @@ export default function Index() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={() =>
+                                                        handleEdit(feedback)
+                                                    }
+                                                >
                                                     Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
@@ -199,6 +231,52 @@ export default function Index() {
                             ))}
                         </TableBody>
                     </Table>
+
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogContent className="sm:max-w-sm">
+                            <DialogHeader>
+                                <DialogTitle>Edit your feedback</DialogTitle>
+                                <DialogDescription>
+                                    Update your feedback and click update.
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <form onSubmit={handleUpdate}>
+                                <div className="grid gap-4">
+                                    <div>
+                                        <Label>Title</Label>
+                                        <Input
+                                            value={data.title}
+                                            onChange={(e) =>
+                                                setData('title', e.target.value)
+                                            }
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <Label>Feedback</Label>
+                                        <Input
+                                            value={data.feedback}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'feedback',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <DialogFooter className="mt-4">
+                                    <Button type="submit" disabled={processing}>
+                                        {processing ? 'updating...' : 'Update'}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
         </AppLayout>
