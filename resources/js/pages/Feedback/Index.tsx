@@ -57,7 +57,7 @@ interface PageProps {
 }
 
 export default function Index() {
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, put, delete: destroy, processing, errors } = useForm({
         title: '',
         feedback: '',
     });
@@ -101,6 +101,12 @@ export default function Index() {
             },
         });
     };
+
+    const handleDelete = (feedbackId: number) => {
+        if (confirm('Are you sure you want to delete this feedback?')) {
+            destroy(`/feedback/${feedbackId}`);
+        }
+    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -221,7 +227,7 @@ export default function Index() {
                                                     Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem variant="destructive">
+                                                <DropdownMenuItem variant="destructive" onClick={()=> handleDelete(feedback.id)}>
                                                     Delete
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>

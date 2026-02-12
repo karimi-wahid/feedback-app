@@ -37,4 +37,10 @@ class feedbackController extends Controller
         $feedbackId->update($validated);
         return redirect()->route('feedback.index')->with('success', 'Feedback updated successfully.');
     }
+
+    public function destroy(Feedback $feedbackId)
+    {
+        $feedbackId->delete();
+        return redirect()->route('feedback.index')->with('success', 'Feedback deleted successfully.');
+    }
 }
